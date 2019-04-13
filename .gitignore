@@ -1,0 +1,13 @@
+*
+!.gitignore
+!*/
+
+!*.h
+!*.cpp
+!*.qbs
+!*.js
+!*.qml
+!qmldir
+!*.py
+!*.txt
+!*.md
