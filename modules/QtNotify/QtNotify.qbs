@@ -24,8 +24,7 @@ Module {
         submodules: ['core', 'gui']
     }
 
-    Depends {name: 'PkgConfig'}
-    PkgConfig.libName: 'libnotify'
+    Depends {name: 'libnotify'}
 
     Group {
         name: 'QtNotify'
