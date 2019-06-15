@@ -14,7 +14,6 @@
 { General Public License for more details: https://gnu.org/licenses/gpl.html }
 {****************************************************************************/
 
-import qbs
 import qbs.FileInfo
 
 Module {
