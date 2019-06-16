@@ -40,17 +40,17 @@
 #endif
 
 #ifndef Q_OS_WIN
-    #include "signal.h"
+    #include <csignal>
 #endif
 
 #ifdef QT_GUI_LIB
     #ifdef QT_WIDGETS_LIB
-        typedef QApplication CoreAppParentClass;
+        using CoreAppParentClass = QApplication;
     #else
-        typedef QGuiApplication CoreAppParentClass;
+        using CoreAppParentClass = QGuiApplication;
     #endif
 #else
-    typedef QCoreApplication CoreAppParentClass;
+    using CoreAppParentClass = QCoreApplication;
 #endif
 
 class CoreAppNativeEventFilter : public QObject, public QAbstractNativeEventFilter
@@ -58,8 +58,8 @@ class CoreAppNativeEventFilter : public QObject, public QAbstractNativeEventFilt
     Q_OBJECT
 
 public:
-    explicit CoreAppNativeEventFilter(QObject* parent = nullptr):QObject(parent),QAbstractNativeEventFilter(){}
-    virtual bool nativeEventFilter(const QByteArray& eventType, void* message, long* result);
+    explicit CoreAppNativeEventFilter(QObject* parent = nullptr):QObject(parent){}
+    bool nativeEventFilter(const QByteArray& eventType, void* message, long* result) override;
 
 signals:
     void onEvent(void* event, bool& stopPropagation);
@@ -94,7 +94,9 @@ public:
     static inline CoreApp* instance() {return appInstance;}
 
     CoreApp(int& argc, char** argv, bool exitAfterMain = true);
-    ~CoreApp();
+    ~CoreApp() override;
+    CoreApp(const CoreApp&) = delete;
+
     inline bool isQuitting() const {return quitting;}
     virtual void interrupt(int sigNum);
     bool loadTranslations(const QString& dirname, const QLocale &locale = QLocale());

@@ -33,7 +33,7 @@ static constexpr int ICON_SIZE = 128;
 
 class Impl : public QSharedData {
 protected:
-    typedef QSharedPointer<NotifyNotification> NotificationPtr;
+    using NotificationPtr = QSharedPointer<NotifyNotification>;
 
     static void setAppIcon(NotificationPtr n)
     {

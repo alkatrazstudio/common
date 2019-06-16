@@ -17,7 +17,7 @@
 #pragma once
 
 #include <QtCore>
-#include <errno.h>
+#include <cerrno>
 #include <stdexcept>
 #include <typeindex>
 
@@ -56,16 +56,16 @@ class ErrorManager : public QObject
 public:
     struct ErrorStruct
     {
-        bool isException;
-        const void* sender;
-        const std::type_info* senderTypeInfo;
-        const char* sourceFile;
-        const char* funcSig;
-        int sourceLine;
-        int errorVal;
-        const std::type_info* codeTypeInfo;
-        const char* errorScope;
-        const char* errorName;
+        bool isException {};
+        const void* sender {};
+        const std::type_info* senderTypeInfo {};
+        const char* sourceFile {};
+        const char* funcSig {};
+        int sourceLine {};
+        int errorVal {};
+        const std::type_info* codeTypeInfo {};
+        const char* errorScope {};
+        const char* errorName {};
         QString description;
 
         ErrorStruct() = default;
@@ -98,7 +98,7 @@ public:
         {
         }
 
-        ~ErrorStruct(){}
+        virtual ~ErrorStruct() = default;
         QString logLine() const;
 
         template<typename T>
@@ -138,7 +138,6 @@ public:
         {
         }
         Exception(const Exception&) = default;
-        virtual ~Exception();
 
         const ErrorStruct& err() const {return err_;}
 
@@ -201,8 +200,7 @@ public:
             return errorString;
         if(dataString.isEmpty())
             return errorString;
-        else
-            return errorString + ": " + dataString;
+        return errorString + ": " + dataString;
     }
 
     static const QString& noDescription()

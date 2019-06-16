@@ -37,7 +37,7 @@ public:
     signals: void on_doc_changed();
 
 public:
-    virtual void setTheme(const KSyntaxHighlighting::Theme &theme);
+    void setTheme(const KSyntaxHighlighting::Theme &theme) override;
 
     static void registerInQml() {
         qmlRegisterType<CodeHighlighter>(

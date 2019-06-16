@@ -17,7 +17,7 @@
 #pragma once
 
 #define SIMPLE_QML_PROP(type, field) \
-    protected: type field##_ = 0; \
+    protected: type field##_ {}; \
     public: \
         const type& field() const {return field##_;} \
         void set_##field(type field) { \
@@ -30,7 +30,7 @@
     private:
 
 #define SIMPLE_QML_OBJ_PROP(type, field) \
-    protected: type field##_; \
+    protected: type field##_ {}; \
     public: \
         const type& field() const {return field##_;} \
         void set_##field(const type& field) { \
@@ -43,7 +43,7 @@
     private:
 
 #define SIMPLE_QML_RO_PROP(type, field) \
-    protected: type field##_ = 0; \
+    protected: type field##_ {}; \
     public: \
         const type& field() const {return field##_;} \
         void set_##field(type field) { \
@@ -56,7 +56,7 @@
     private:
 
 #define SIMPLE_QML_OBJ_RO_PROP(type, field) \
-    protected: type field##_; \
+    protected: type field##_ {}; \
     public: \
         const type& field() const {return field##_;} \
         void set_##field(const type& field) { \
@@ -69,7 +69,7 @@
     private:
 
 #define SIMPLE_QML_POBJ_PROP(type, field) \
-    protected: type* field##_ = nullptr; \
+    protected: type* field##_ {}; \
     public: \
         type* field() const {return field##_;} \
         void set_##field(type* field) { \

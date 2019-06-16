@@ -30,7 +30,7 @@ ErrorManager::~ErrorManager()
     errMan = nullptr;
 }
 
-ErrorManager::ErrorManager():QObject()
+ErrorManager::ErrorManager()
 {
     qRegisterMetaType<ErrorManager::ErrorStruct>("ErrorManager::ErrorStruct");
 }
@@ -66,8 +66,4 @@ QString ErrorManager::ErrorStruct::logLine() const
                     % description
                     % " [" % QDir(SOURCE_ROOT).relativeFilePath(sourceFile) % ":" % QString::number(sourceLine) % "]";
     return line;
-}
-
-ErrorManager::Exception::~Exception()
-{
 }
