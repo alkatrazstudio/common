@@ -393,6 +393,15 @@ const QStringList &CoreApp::sysDataDirs()
     return dirs;
 }
 
+bool CoreApp::isAppImage()
+{
+#ifdef Q_OS_LINUX
+    return !qEnvironmentVariableIsEmpty("APPIMAGE") && !qEnvironmentVariableIsEmpty("ARGV0");
+#else
+    return false;
+#endif
+}
+
 const QDateTime &CoreApp::buildDate()
 {
     static QDateTime dateTime = QDateTime::fromSecsSinceEpoch(BUILD_TS);

@@ -105,6 +105,7 @@ public:
 
     static const QStringList &userDataDirs();
     static const QStringList &sysDataDirs();
+    static bool isAppImage();
 
     static const QDateTime &buildDate();
 
