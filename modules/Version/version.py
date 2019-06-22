@@ -31,18 +31,20 @@ def get_git_info(git_exe):
     args = [git_exe, "describe"]
     try:
         stdout = subprocess.run(
-                args,
-                stdout=subprocess.PIPE,
-                stderr=subprocess.PIPE,
-                check=True,
-                universal_newlines=True).stdout.strip()
+            args,
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE,
+            check=True,
+            universal_newlines=True
+        ).stdout.strip()
     except Exception as e:
         raise RuntimeError("{}: {}".format(" ".join(args), e))
 
     # possible results:
     # - v1.2
     # - v1.2-1-g8f4e68a
-    m = re.match(r"^v(\d+)\.(\d+)(?:-(\d+))?", stdout)
+    # - v1.2.3-1-g8f4e68a
+    m = re.match(r"^v(\d+)\.(\d+)(?:[-.](\d+))?", stdout)
     if not m:
         raise RuntimeError("Cannot parse {} output: {}".format(" ".join(args), stdout))
     return [int(x) for x in m.groups("0")]
@@ -65,47 +67,33 @@ def get_file_info(filename):
 #
 os.chdir(os.path.join(os.path.dirname(os.path.realpath(__file__)), "..", "..", ".."))
 
-#
-# get version info from git
-#
-git_ver_maj = 0
-git_ver_min = 0
-git_ver_pat = 0
 
-if not os.path.isdir(".git"):
-    log("Ignoring Git tags: .git directory not found.")
-else:
+#
+# get version info
+#
+ver_maj = 0
+ver_min = 0
+ver_pat = 0
+
+filename = "VERSION"
+if os.path.isfile(filename):
+    try:
+        ver_maj, ver_min, ver_pat = get_file_info(filename)
+    except Exception as e:
+        log("Ignoring file: {}".format(e))
+elif os.path.isdir(".git"):
     git_exe = shutil.which("git")
     if git_exe is None:
         log("Ignoring Git tags: Git not found.")
     else:
         try:
-            git_ver_maj, git_ver_min, git_ver_pat = get_git_info(git_exe)
+            ver_maj, ver_min, ver_pat = get_git_info(git_exe)
         except Exception as e:
             log("Ignoring Git tags: {}".format(e))
 
-#
-# get version info from file
-#
-file_ver_maj = 0
-file_ver_min = 0
-file_ver_pat = 0
-
-filename = "VERSION"
-if not os.path.isfile(filename):
-    log("Ignoring file: VERSION file not found.")
-else:
-    try:
-        file_ver_maj, file_ver_min, file_ver_pat = get_file_info(filename)
-    except Exception as e:
-        log("Ignoring file: {}".format(e))
 
 #
-# get final version number
+# output version number string
 #
-ver_maj = max(git_ver_maj, file_ver_maj)
-ver_min = max(git_ver_min, file_ver_min)
-ver_pat = max(git_ver_pat, file_ver_pat)
 ver = "{}.{}.{}".format(ver_maj, ver_min, ver_pat)
-
 sys.stdout.write(ver)  # use sys.stdout.write() instead of print() to not add a newline
