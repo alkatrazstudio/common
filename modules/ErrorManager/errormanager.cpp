@@ -18,6 +18,7 @@
 #include "common_defines.h"
 
 ErrorManager* ErrorManager::errMan = nullptr;
+thread_local ErrorManager::ErrorStruct ErrorManager::lastErrorStruct;
 
 void ErrorManager::createInstance()
 {

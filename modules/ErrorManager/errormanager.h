@@ -71,6 +71,7 @@ public:
         ErrorStruct() = default;
         inline ErrorStruct(const ErrorStruct& obj) = default;
         inline ErrorStruct(ErrorStruct&& obj) = default;
+        ErrorStruct& operator = (const ErrorStruct &t) = default;
 
         inline ErrorStruct(
                 bool isException,
@@ -145,12 +146,13 @@ public:
         ErrorStruct err_;
     };
 
-    inline static int getLastError() {return errno &~ errnoMask;}
+    inline static const ErrorStruct& lastError() {return lastErrorStruct;}
     static const int errnoMask = 0x0f000000;
     inline static ErrorManager *instance(){return errMan;}
 
     inline void setError(const ErrorStruct& err)
     {
+        lastErrorStruct = err;
         errno = err.errorVal | errnoMask;
         emit onError(err);
         if(err.isException)
@@ -217,6 +219,7 @@ public:
 protected:
     ErrorManager();
     static ErrorManager* errMan;
+    static thread_local ErrorStruct lastErrorStruct;
 
 signals:
     void onError(const ErrorManager::ErrorStruct &err);
