@@ -128,8 +128,8 @@ CoreApp::CoreApp(int& argc, char** argv, bool exitAfterMain):CoreAppParentClass(
 #endif
         );
         qputenv("QML2_IMPORT_PATH", qmlCommonPath.toUtf8().constData());
-#endif
     }
+#endif
 }
 
 CoreApp::~CoreApp()
