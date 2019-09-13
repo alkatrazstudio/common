@@ -48,7 +48,13 @@ BOOL CtrlHandler(DWORD fdwCtrlType)
 }
 #endif
 
-CoreApp::CoreApp(int& argc, char** argv, bool exitAfterMain):CoreAppParentClass(argc, argv)
+static char** staticInit(char** dummy)
+{
+    CoreApp::setAttribute(Qt::AA_EnableHighDpiScaling);
+    return dummy;
+}
+
+CoreApp::CoreApp(int& argc, char** argv, bool exitAfterMain):CoreAppParentClass(argc, staticInit(argv))
   ,exitAfterMain(exitAfterMain)
 #ifdef COREAPP_DUMMYWIN
   ,createDummyWindow(false)
@@ -67,8 +73,6 @@ CoreApp::CoreApp(int& argc, char** argv, bool exitAfterMain):CoreAppParentClass(
 #endif
 {
     appInstance = this;
-
-    setAttribute(Qt::AA_EnableHighDpiScaling);
 
     setApplicationName(APP_NAME);
 #ifdef QT_GUI_LIB
