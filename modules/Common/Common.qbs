@@ -62,7 +62,10 @@ Module {
     cpp.linkerFlags: {
         var flags = []
         if(qbs.targetOS.contains('linux'))
+        {
             flags.push('-fuse-ld=gold')
+            flags.push('-L/usr/local/lib')
+        }
         return flags
     }
 
