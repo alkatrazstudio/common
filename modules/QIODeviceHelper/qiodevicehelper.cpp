@@ -50,7 +50,7 @@ bool QFileEx::openWithBackup(OpenMode mode)
     QFile::remove(backupFilename);
     if(QFile::rename(fileName(), backupFilename))
         doRestore = true;
-    if(!((QIODevice*)this)->open(mode))
+    if(!open(mode))
     {
         if(doRestore)
         {
