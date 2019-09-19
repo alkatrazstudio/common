@@ -35,14 +35,20 @@ Module {
     readonly property bool isLib: product.type.indexOf('dynamiclibrary') != -1
     property bool installLibLinks: true
 
+    readonly property bool isLinux: qbs.targetPlatform === 'linux'
+    readonly property bool isWindows: qbs.targetPlatform === 'windows'
+    readonly property bool isOSX: qbs.targetPlatform === 'macos'
+
     readonly property stringList libraryPaths: {
         var paths = []
         if(product.Qt)
         {
             var paths = [product.Qt.core.libPath]
-            if(qbs.targetOS.contains('linux'))
+            if(Common.isLinux)
                 paths.push(product.Qt.core.libPath+'/'+qbs.architecture+'-linux-gnu')
         }
+        if(Common.isLinux)
+            paths.push('/usr/local/lib')
         return paths
     }
 
@@ -61,11 +67,8 @@ Module {
     cpp.cxxLanguageVersion: 'c++17'
     cpp.linkerFlags: {
         var flags = []
-        if(qbs.targetOS.contains('linux'))
-        {
+        if(Common.isLinux)
             flags.push('-fuse-ld=gold')
-            flags.push('-L/usr/local/lib')
-        }
         return flags
     }
 
@@ -127,6 +130,16 @@ Module {
         cpp.debugInformation: true
         cpp.enableDebugCode: true
         cpp.cxxFlags: outer.concat('-ggdb3').concat('-fvisibility=hidden')
+    }
+
+    Properties {
+        condition: Common.isWindows
+        cpp.defines: outer.concat([
+            'WIN32_LEAN_AND_MEAN',
+            '_WIN32_IE=_WIN32_IE_WIN10',
+            'UNICODE',
+            '_UNICODE'
+        ])
     }
 
     Group {

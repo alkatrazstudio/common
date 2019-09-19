@@ -21,6 +21,10 @@
     #include <QLocalSocket>
 #endif
 
+#ifdef Q_OS_WIN
+    #include <windows.h>
+#endif
+
 CoreApp* CoreApp::appInstance = nullptr;
 
 #ifndef Q_OS_WIN
