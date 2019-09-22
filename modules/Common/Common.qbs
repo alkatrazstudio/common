@@ -83,8 +83,6 @@ Module {
         return paths
     }
 
-    cpp.frameworks: ['CoreAudio']
-
     Rule {
         multiplex: true
         Artifact {
