@@ -43,12 +43,10 @@ Module {
         var paths = []
         if(product.Qt)
         {
-            var paths = [product.Qt.core.libPath]
+            paths.push(product.Qt.core.libPath)
             if(Common.isLinux)
                 paths.push(product.Qt.core.libPath+'/'+qbs.architecture+'-linux-gnu')
         }
-        if(Common.isLinux)
-            paths.push('/usr/local/lib')
         return paths
     }
 
@@ -68,11 +66,15 @@ Module {
     cpp.linkerFlags: {
         var flags = []
         if(Common.isLinux)
+        {
             flags.push('-fuse-ld=gold')
+            flags.push('-L/usr/local/lib')
+        }
         return flags
     }
 
     cpp.libraryPaths: libraryPaths
+
     cpp.includePaths: {
         var paths = []
         if(product.Qt)
