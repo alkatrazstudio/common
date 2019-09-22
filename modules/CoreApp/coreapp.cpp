@@ -98,7 +98,7 @@ CoreApp::CoreApp(int& argc, char** argv, bool exitAfterMain):CoreAppParentClass(
     QTimer::singleShot(0, this, &CoreApp::_run);
 
 #ifndef Q_OS_WIN
-    for(int i=0; i<_NSIG; i++)
+    for(int i=0; i<NSIG; i++)
         signal(i, sigHandler);
 #else
     SetConsoleCtrlHandler((PHANDLER_ROUTINE)CtrlHandler, true);
