@@ -83,6 +83,8 @@ Module {
         return paths
     }
 
+    cpp.frameworks: ['CoreAudio']
+
     Rule {
         multiplex: true
         Artifact {
@@ -147,10 +149,17 @@ Module {
     Group {
         name: 'Binary'
         fileTagsFilter: {
-            var tags = [
-                'bundle.content',
-                Common.isLib ? 'dynamiclibrary' : 'application'
-            ]
+            var tags = []
+            if(Common.isLib)
+            {
+                tags.push('dynamiclibrary')
+            }
+            else
+            {
+                tags.push('bundle.content')
+                if(!Common.isOSX)
+                    tags.push('application')
+            }
             tags = product.type.filter(function(tag){return tags.indexOf(tag) != -1})
             if(Common.isLib && Common.installLibLinks)
                 tags.push('dynamiclibrary_symlink')
