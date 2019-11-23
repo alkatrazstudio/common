@@ -150,6 +150,7 @@ protected:
     QByteArray localSockBuffer;
     QString localSockName;
     virtual bool startLocalServer();
+    void restartLocalServer();
     virtual bool passCommandsToLocalServer(QLocalSocket &sock);
     virtual void closeLocalSocket();
     virtual bool validateSingleInstance(int *exitCode = nullptr);

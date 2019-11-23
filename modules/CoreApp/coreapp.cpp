@@ -468,14 +468,34 @@ bool CoreApp::startLocalServer()
     {
         localServer = new QLocalServer(this);
         connect(localServer, &QLocalServer::newConnection, this, &CoreApp::onNewLocalServerConnection);
+    }
+    if(!localServer->isListening())
+    {
         if(!localServer->listen(localSockName))
         {
             CHECK(localServer->serverError() == QAbstractSocket::AddressInUseError, Err::createLocalServer);
-            CHECK(localServer->removeServer(localSockName), Err::freeLocalServer);
+            CHECK(QLocalServer::removeServer(localSockName), Err::freeLocalServer);
             CHECK(localServer->listen(localSockName), Err::createLocalServer);
         }
     }
     return true;
+}
+
+void CoreApp::restartLocalServer()
+{
+    /*
+    AN UGLY HACK!
+    For some reason, after closing the first accepted connection,
+    the server no longer accepts any connections, and no errors are emitted.
+    The only way to deal with this is to restart the server.
+    However, after immediate restart the server also stops accepting connections.
+    So, we need to wait for some time before restarting it.
+    */
+    QTimer::singleShot(500, [this]{
+        if(localServer)
+            localServer->close();
+        startLocalServer();
+    });
 }
 
 bool CoreApp::passCommandsToLocalServer(QLocalSocket &sock)
@@ -513,7 +533,7 @@ void CoreApp::closeLocalSocket()
     if(localSock)
     {
         localSock->disconnect(this);
-        localSock->disconnectFromServer();
+        localSock->disconnectFromServer(); // Qt BUG? This causes the server to stop accepting connections
         localSockArgs.clear();
         localSockBuffer.clear();
         localSock->deleteLater();
@@ -568,6 +588,7 @@ void CoreApp::onLocalSocketClientData()
         if(!localSock->getChar(&x))
         {
             closeLocalSocket();
+            restartLocalServer();
             SETERROR(Err::readFromLocalSock);
             return;
         }
@@ -582,6 +603,7 @@ void CoreApp::onLocalSocketClientData()
                 else
                     ok = true;
                 closeLocalSocket();
+                restartLocalServer();
                 CHECKV(ok, Err::writeToLocalSock);
                 return;
             }
@@ -598,6 +620,7 @@ void CoreApp::onLocalSocketClientData()
 void CoreApp::onLocalSockDisconnect()
 {
     closeLocalSocket();
+    restartLocalServer();
     SETERROR(Err::localSocketDisconnect);
 }
 #endif
