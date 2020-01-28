@@ -34,6 +34,7 @@ Module {
     property string appReverseDomain: orgReverseDomain+'.'+appName.replace(/-/g, '')
     readonly property bool isLib: product.type.indexOf('dynamiclibrary') != -1
     property bool installLibLinks: true
+    property string osxIconFilename: 'icons/app.icns'
 
     readonly property bool isLinux: qbs.targetPlatform === 'linux'
     readonly property bool isWindows: qbs.targetPlatform === 'windows'
@@ -81,6 +82,54 @@ Module {
             paths.push(product.Qt.core.incPath)
         paths.push(product.buildDirectory+'/generated/common/include')
         return paths
+    }
+
+    cpp.frameworks: ['CoreAudio']
+
+    Depends {
+        name: 'bundle'
+        condition: Common.isOSX
+    }
+
+    Properties {
+        condition: Common.isOSX
+        bundle.identifier: {
+            return appReverseDomain
+        }
+    }
+
+    Probe {
+        id: osxIconProbe
+        condition: Common.isOSX
+        readonly property var srcDir: project.sourceDirectory
+        readonly property string osxIconFilename: Common.osxIconFilename
+        property bool iconFileExists: false
+        property string iconFilename: ""
+        configure: {
+            iconFilename = srcDir + '/' + osxIconFilename
+            iconFileExists = File.exists(iconFilename)
+            found = iconFileExists
+        }
+    }
+    // need these props because Probes can't be used inside Groups
+    readonly property bool osxIconFileExists: osxIconProbe.iconFileExists
+    readonly property string osxIconFullFilename: osxIconProbe.iconFilename
+
+    Group {
+        name: 'OSX icon'
+        condition: Common.isOSX && Common.osxIconFileExists
+        files: [
+            Common.osxIconFullFilename
+        ]
+        qbs.install: Common.realInstall
+    }
+
+    // can't put this in the above Group, because it will be ignored
+    Properties {
+        condition: Common.isOSX && Common.osxIconFileExists
+        bundle.infoPlist: ({
+            CFBundleIconFile: FileInfo.fileName(Common.osxIconFullFilename)
+        })
     }
 
     Rule {
