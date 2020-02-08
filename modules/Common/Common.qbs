@@ -51,6 +51,16 @@ Module {
         return paths
     }
 
+    readonly property string libExt: {
+        if(isLinux)
+            return 'so'
+        if(isWindows)
+            return 'dll'
+        if(isOSX)
+            return 'dylib'
+        return ''
+    }
+
     Group {
         name: 'TODO'
         files: [
