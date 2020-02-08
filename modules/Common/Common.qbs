@@ -94,8 +94,6 @@ Module {
         return paths
     }
 
-    cpp.frameworks: ['CoreAudio']
-
     Depends {
         name: 'bundle'
         condition: Common.isOSX
