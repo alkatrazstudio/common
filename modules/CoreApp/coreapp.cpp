@@ -426,7 +426,22 @@ void CoreApp::_run()
 {
 #ifdef COREAPP_SINGLEKEY
     if(singleInstance)
-        validateSingleInstance();
+    {
+        SingleInstanceValidationResult result;
+        if(!validateSingleInstance(result))
+        {
+            switch(result)
+            {
+                case SingleInstanceValidationResult::runningInstanceFound:
+                    exit(0);
+                    break;
+
+                default:
+                    exit(-1);
+            }
+            return;
+        }
+    }
 #endif
 
 #ifdef COREAPP_DUMMYWIN
@@ -481,23 +496,6 @@ bool CoreApp::startLocalServer()
     return true;
 }
 
-void CoreApp::restartLocalServer()
-{
-    /*
-    AN UGLY HACK!
-    For some reason, after closing the first accepted connection,
-    the server no longer accepts any connections, and no errors are emitted.
-    The only way to deal with this is to restart the server.
-    However, after immediate restart the server also stops accepting connections.
-    So, we need to wait for some time before restarting it.
-    */
-    QTimer::singleShot(500, [this]{
-        if(localServer)
-            localServer->close();
-        startLocalServer();
-    });
-}
-
 bool CoreApp::passCommandsToLocalServer(QLocalSocket &sock)
 {
     QStringList args = arguments();
@@ -541,7 +539,7 @@ void CoreApp::closeLocalSocket()
     }
 }
 
-bool CoreApp::validateSingleInstance(int* exitCode)
+bool CoreApp::validateSingleInstance(SingleInstanceValidationResult &result)
 {
     QLocalSocket s;
     s.connectToServer(localSockName, QIODevice::ReadWrite);
@@ -549,17 +547,21 @@ bool CoreApp::validateSingleInstance(int* exitCode)
     {
         if(passCommandsToLocalServer(s))
         {
-            if(exitCode)
-                *exitCode = 0;
-            quit();
+            result = SingleInstanceValidationResult::runningInstanceFound;
             return false;
         }
+        else
+        {
+            result = SingleInstanceValidationResult::runningInstanceIgnored;
+        }
+    }
+    else
+    {
+        result = SingleInstanceValidationResult::runningInstanceNotFound;
     }
     if(!startLocalServer())
     {
-        if(exitCode)
-            *exitCode = -1;
-        exit(-1);
+        result = SingleInstanceValidationResult::cannotStartLocalServer;
         return false;
     }
     return true;
@@ -588,7 +590,6 @@ void CoreApp::onLocalSocketClientData()
         if(!localSock->getChar(&x))
         {
             closeLocalSocket();
-            restartLocalServer();
             SETERROR(Err::readFromLocalSock);
             return;
         }
@@ -603,7 +604,6 @@ void CoreApp::onLocalSocketClientData()
                 else
                     ok = true;
                 closeLocalSocket();
-                restartLocalServer();
                 CHECKV(ok, Err::writeToLocalSock);
                 return;
             }
@@ -620,7 +620,6 @@ void CoreApp::onLocalSocketClientData()
 void CoreApp::onLocalSockDisconnect()
 {
     closeLocalSocket();
-    restartLocalServer();
     SETERROR(Err::localSocketDisconnect);
 }
 #endif

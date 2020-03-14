@@ -91,6 +91,16 @@ public:
     };
     Q_ENUM(Err)
 
+#ifdef COREAPP_SINGLEKEY
+    enum class SingleInstanceValidationResult {
+        runningInstanceFound,
+        runningInstanceNotFound,
+        runningInstanceIgnored,
+        cannotStartLocalServer
+    };
+    Q_ENUM(SingleInstanceValidationResult)
+#endif
+
     static inline CoreApp* instance() {return appInstance;}
 
     CoreApp(int& argc, char** argv, bool exitAfterMain = true);
@@ -150,10 +160,9 @@ protected:
     QByteArray localSockBuffer;
     QString localSockName;
     virtual bool startLocalServer();
-    void restartLocalServer();
     virtual bool passCommandsToLocalServer(QLocalSocket &sock);
     virtual void closeLocalSocket();
-    virtual bool validateSingleInstance(int *exitCode = nullptr);
+    virtual bool validateSingleInstance(SingleInstanceValidationResult &result);
 #endif
     virtual int main();
 
