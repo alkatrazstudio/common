@@ -48,8 +48,8 @@ NotificationPopup::NotificationPopup(QObject *parent, QMainWindow *mainWindow) :
     int minWidth = charWidth * 40;
 
     QPalette p = QApplication::palette();
-    p.setColor(QPalette::Background, p.color(QPalette::ToolTipBase));
-    p.setColor(QPalette::Foreground, p.color(QPalette::ToolTipText));
+    p.setColor(QPalette::Window, p.color(QPalette::ToolTipBase));
+    p.setColor(QPalette::WindowText, p.color(QPalette::ToolTipText));
 
     root = new QWidget(mainWindow, Qt::ToolTip);
     root->installEventFilter(this);
