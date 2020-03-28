@@ -109,6 +109,7 @@ public:
 
     inline bool isQuitting() const {return quitting;}
     virtual void interrupt(int sigNum);
+    bool canHaveTranslation(const QString& lang);
     bool loadTranslations(const QString& dirname, const QLocale &locale = QLocale());
     bool loadTranslations();
     void unloadTranslations();

@@ -239,12 +239,21 @@ void CoreApp::logLine(const QString &line)
 bool CoreApp::addTranslator(const QLocale &locale, const QString &filename, const QString &prefix, const QString &directory)
 {
     QTranslator* translator = new QTranslator();
-    if(translator->load(locale, filename, prefix, directory))
+    for(QString lang : locale.uiLanguages())
     {
-        if(qApp->installTranslator(translator))
-        {
-            translators.append(translator);
+        // if one of UI langs is English then consider its translator loaded
+        // this will allow to not load next UI langs (since there will be no en.qm)
+        if(!canHaveTranslation(lang))
             return true;
+        lang.replace('-', '_');
+        QString qmBasename = filename + prefix + lang;
+        if(translator->load(qmBasename, directory))
+        {
+            if(qApp->installTranslator(translator))
+            {
+                translators.append(translator);
+                return true;
+            }
         }
     }
 
@@ -256,6 +265,11 @@ void CoreApp::interrupt(int sigNum)
 {
     Q_UNUSED(sigNum);
     quit();
+}
+
+bool CoreApp::canHaveTranslation(const QString& lang)
+{
+    return lang != "en" && !lang.startsWith("en-");
 }
 
 bool CoreApp::loadTranslations(const QString &dirname, const QLocale& locale)
@@ -294,7 +308,7 @@ bool CoreApp::loadTranslations(const QString &dirname, const QLocale& locale)
         // since English is not supposed to have a translation in the first place
         QStringList langs = locale.uiLanguages();
         foreach(const QString& lang, langs)
-            CHECK(lang == "en" || lang.startsWith("en-"), Err::addTranslation, langs.join(","));
+            CHECK(!canHaveTranslation(lang), Err::addTranslation, langs.join(","));
         return false;
     }
 
