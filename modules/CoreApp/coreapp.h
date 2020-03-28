@@ -121,6 +121,7 @@ public:
     static const QDateTime &buildDate();
 
     static const QVersionNumber& version();
+    static const QVersionNumber& majMinVersion();
     static unsigned int majorVersion(){return static_cast<unsigned int>(version().majorVersion());}
     static unsigned int minorVersion(){return static_cast<unsigned int>(version().minorVersion());}
     static unsigned int patchVersion(){return static_cast<unsigned int>(version().microVersion());}

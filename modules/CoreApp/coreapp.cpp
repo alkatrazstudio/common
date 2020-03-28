@@ -436,6 +436,12 @@ const QVersionNumber &CoreApp::version()
     return v;
 }
 
+const QVersionNumber &CoreApp::majMinVersion()
+{
+    static QVersionNumber v(VER_MAJ, VER_MIN);
+    return v;
+}
+
 void CoreApp::_run()
 {
 #ifdef COREAPP_SINGLEKEY
