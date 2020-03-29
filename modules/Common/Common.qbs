@@ -175,7 +175,8 @@ Module {
         cpp.cxxFlags: outer.concat('-fvisibility=hidden')
         cpp.linkerFlags: {
             var flags = outer
-            flags = flags.concat('-s')
+            if(!Common.isOSX)
+                flags = flags.concat('-s')
             if(Common.realInstall && cpp.rpathOrigin)
                 flags = flags.concat('-rpath').concat(cpp.rpathOrigin+'/lib')
             return flags
