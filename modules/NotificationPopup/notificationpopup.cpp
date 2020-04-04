@@ -65,7 +65,7 @@ NotificationPopup::NotificationPopup(QObject *parent, QMainWindow *mainWindow) :
     vLayout->addWidget(textLabel = new QLabel(), 1);
     vLayout->setSizeConstraint(QLayout::SetFixedSize);
 
-    icoLabel->resize(icoSize, icoSize);    
+    icoLabel->resize(icoSize, icoSize);
     icoLabel->setScaledContents(true);
     icoLabel->setMaximumHeight(icoSize);
     icoLabel->setMaximumWidth(icoSize);
