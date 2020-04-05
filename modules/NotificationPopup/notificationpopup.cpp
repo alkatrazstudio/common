@@ -114,13 +114,38 @@ void NotificationPopup::show(const QString &title, const QString &message, int m
     if(trayRect.size().isEmpty())
     {
         // guess the corner in which the system tray icon may be
-        int x = ((availRect.left() - fullRect.left()) > (fullRect.right() - availRect.right()))
+        int topPad = availRect.top() - fullRect.top();
+        int bottomPad = fullRect.bottom() - availRect.bottom();
+        bool hasVerticalPad = topPad || bottomPad;
+
+        int x;
+        if(hasVerticalPad)
+        {
+            // if the screen has vertical padding then assume that
+            // the tray is located in a top/bottom horizontal panel
+            // and it's right-aligned (since this is the most common position)
+            x = availRect.right();
+        }
+        else
+        {
+            // if there's no vertical padding then
+            // it means that there are no horizontal panels
+            // so, assume the tray icon is on the widest panel;
+            // if the size of left and right padding are equal
+            // then choose the right side
+            int leftPad = availRect.left() - fullRect.left();
+            int rightPad = fullRect.right() - availRect.right();
+            x = (leftPad > rightPad)
                 ? availRect.left() : availRect.right();
+        }
+
 #ifdef Q_OS_OSX
+        // OSX has persistent tray position
         int y = availRect.top();
 #else
-        int y = ((availRect.top() - fullRect.top()) > (fullRect.bottom() - availRect.top()))
-                ? availRect.top() : availRect.bottom();
+        // if there's a top panel then
+        // it's 99% chance that the tray icon is there
+        int y = topPad ? availRect.top() : availRect.bottom();
 #endif
         trayRect = QRect(x, y, 0, 0);
     }
