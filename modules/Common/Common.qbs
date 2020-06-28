@@ -17,6 +17,7 @@
 import qbs.File
 import qbs.FileInfo
 import qbs.TextFile
+import qbs.Environment
 
 Module {
     readonly property string installDir: FileInfo.joinPaths(qbs.installRoot, qbs.installPrefix)
@@ -47,6 +48,8 @@ Module {
             paths.push(product.Qt.core.libPath)
             if(Common.isLinux)
                 paths.push(product.Qt.core.libPath+'/'+qbs.architecture+'-linux-gnu')
+            else if(Common.isWindows)
+                paths.push(Environment.getEnv('MINGW_PREFIX')+'/bin')
         }
         return paths
     }
