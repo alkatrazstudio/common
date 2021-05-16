@@ -162,7 +162,8 @@ protected:
     QByteArray localSockBuffer;
     QString localSockName;
     virtual bool startLocalServer();
-    virtual bool passCommandsToLocalServer(QLocalSocket &sock);
+    virtual QStringList getArgsForPassingToLocalServer();
+    virtual bool passArgsToLocalServer(QLocalSocket &sock);
     virtual void closeLocalSocket();
     virtual bool validateSingleInstance(SingleInstanceValidationResult &result);
 #endif

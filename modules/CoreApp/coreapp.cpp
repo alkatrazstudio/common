@@ -516,12 +516,20 @@ bool CoreApp::startLocalServer()
     return true;
 }
 
-bool CoreApp::passCommandsToLocalServer(QLocalSocket &sock)
+QStringList CoreApp::getArgsForPassingToLocalServer()
 {
     QStringList args = arguments();
-    if(args.size() <= 1)
+    if(!args.isEmpty())
+        args.removeFirst();
+    return args;
+}
+
+bool CoreApp::passArgsToLocalServer(QLocalSocket &sock)
+{
+    QStringList args = getArgsForPassingToLocalServer();
+    if(args.isEmpty())
         return true;
-    args.removeFirst();
+
     QByteArray data;
     for(const QString& arg : qAsConst(args))
     {
@@ -565,7 +573,7 @@ bool CoreApp::validateSingleInstance(SingleInstanceValidationResult &result)
     s.connectToServer(localSockName, QIODevice::ReadWrite);
     if(s.waitForConnected())
     {
-        if(passCommandsToLocalServer(s))
+        if(passArgsToLocalServer(s))
         {
             result = SingleInstanceValidationResult::runningInstanceFound;
             return false;
