@@ -59,10 +59,10 @@ protected:
                 default:
                     i = i.convertToFormat(QImage::Format_ARGB32);
             }
-            if(!i.isNull() && i.byteCount() && !i.size().isEmpty())
+            if(!i.isNull() && i.sizeInBytes() && !i.size().isEmpty())
             {
-                guchar* bits = new guchar[static_cast<size_t>(i.byteCount())];
-                memcpy(bits, i.constBits(), static_cast<size_t>(i.byteCount()));
+                guchar* bits = new guchar[static_cast<size_t>(i.sizeInBytes())];
+                memcpy(bits, i.constBits(), static_cast<size_t>(i.sizeInBytes()));
                 icon.reset(gdk_pixbuf_new_from_data(
                     bits,
                     GDK_COLORSPACE_RGB,
